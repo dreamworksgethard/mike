@@ -146,13 +146,12 @@
     });
   }
 
-  // DexScreener embed
-  const chartFrame = document.querySelector('[data-dex-frame]');
-  const chartPlaceholder = document.querySelector('[data-dex-placeholder]');
-  const dex = (site.DEXSCREENER_URL || '').trim();
-  if (dex && chartFrame) {
-    const src = `${dex}${dex.includes('?') ? '&' : '?'}embed=1&theme=dark&trades=0&info=0`;
-    chartFrame.src = src;
+  // Pons chart embed
+  const chartFrame = document.querySelector('[data-chart-frame]');
+  const chartPlaceholder = document.querySelector('[data-chart-placeholder]');
+  const chartUrl = (site.CHART_URL || '').trim();
+  if (chartUrl && chartFrame) {
+    chartFrame.src = chartUrl;
     chartFrame.hidden = false;
     chartPlaceholder?.setAttribute('hidden', 'true');
   }
