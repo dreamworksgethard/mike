@@ -74,16 +74,44 @@
   onScrollFloat();
   window.addEventListener('scroll', onScrollFloat, { passive: true });
 
-  // Reveal on scroll
+  // Reveal on scroll (both up and down)
   const reveals = document.querySelectorAll('.reveal');
+  let lastY = window.scrollY;
+  let scrollDir = 'down';
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      const y = window.scrollY;
+      if (Math.abs(y - lastY) > 2) {
+        scrollDir = y > lastY ? 'down' : 'up';
+        lastY = y;
+      }
+    },
+    { passive: true }
+  );
+
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('is-in');
+          const el = entry.target;
+          if (entry.isIntersecting) {
+            el.classList.remove('is-in', 'from-up', 'from-down');
+            el.classList.add(scrollDir === 'up' ? 'from-up' : 'from-down');
+            // Restart transition so it plays every time
+            void el.offsetWidth;
+            requestAnimationFrame(() => {
+              el.classList.add('is-in');
+            });
+          } else {
+            el.classList.remove('is-in');
+            el.classList.toggle('from-up', scrollDir === 'down');
+            el.classList.toggle('from-down', scrollDir === 'up');
+          }
         });
       },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
     );
     reveals.forEach((el) => io.observe(el));
   } else {
